@@ -32,6 +32,7 @@ import com.artipie.http.Slice;
 import com.artipie.http.headers.ContentLength;
 import com.artipie.http.rq.RequestLine;
 import com.artipie.http.rq.RqMethod;
+import com.artipie.http.rs.RsStatus;
 import io.reactivex.Flowable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -40,10 +41,6 @@ import java.util.concurrent.CompletionStage;
  * Proxy implementation of {@link Blob}.
  *
  * @since 0.3
- * @todo #170:30min Handle response status in `ProxyBlob.content()` method.
- *  When response is received from remote repository the status might be not OK
- *  in case the blob is missing or some internal error occurred. Content should be returned
- *  only if OK status came in response.
  */
 public final class ProxyBlob implements Blob {
 
@@ -107,6 +104,11 @@ public final class ProxyBlob implements Blob {
             Flowable.empty()
         ).send(
             (status, headers, body) -> {
+                if (status != RsStatus.OK) {
+                    throw new IllegalArgumentException(
+                        String.format("Unexpected status: %s", status)
+                    );
+                }
                 final CompletableFuture<Void> terminated = new CompletableFuture<>();
                 result.complete(
                     new Content.From(

@@ -89,7 +89,15 @@ public final class AstoUpload implements Upload {
 
     @Override
     public CompletionStage<Void> start() {
-        return this.storage.save(this.data(), new Content.From(new byte[0]));
+        //todo: also created on start: /hashstates/sha256/0 file - with zero content
+        //todo: +100 -> data is appended, /hashstates/sha256/100 file created -> range:0-99
+        //todo: +464 -> data is appended, /hashstates/sha256/564 file created -> range:0-563
+        return this.storage.save(this.data(), new Content.From(new byte[0])).thenCompose(
+            ignored -> this.storage.save(
+                new Key.From(new UploadKey(this.name, uuid), "startedat"),
+                new Content.From("2020-05-19T12:58:11Z".getBytes()) //todo: current time
+            )
+        );
     }
 
     @Override

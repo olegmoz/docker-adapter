@@ -76,6 +76,7 @@ public final class MultiReadManifests implements Manifests {
                         if (throwable == null) {
                             result = CompletableFuture.completedFuture(manifest);
                         } else {
+                            //todo: log from where read failed
                             Logger.error(
                                 this, "Failed to read manifest %s: %[exception]s",
                                 ref.string(),

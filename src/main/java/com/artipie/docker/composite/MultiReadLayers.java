@@ -65,6 +65,7 @@ public final class MultiReadLayers implements Layers {
 
     @Override
     public CompletionStage<Optional<Blob>> get(final Digest digest) {
+        //todo: log exceptions
         final CompletableFuture<Optional<Blob>> promise = new CompletableFuture<>();
         CompletableFuture.allOf(
             this.layers.stream()

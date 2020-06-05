@@ -149,7 +149,7 @@ public final class UploadEntity {
         private Response startUpload(final RepoName name) {
             return new AsyncResponse(
                 this.docker.repo(name).uploads().start().thenApply(
-                    upload -> new StatusResponse(name, upload.uuid(), 0)
+                    upload -> new StatusResponse(name, upload.uuid(), 0) //todo: read offset from upload
                 )
             );
         }
@@ -235,6 +235,7 @@ public final class UploadEntity {
             final RepoName name = request.name();
             final String uuid = request.uuid();
             final Repo repo = this.docker.repo(name);
+            //todo: accept body of request as well
             return new AsyncResponse(
                 repo.uploads().get(uuid).thenApply(
                     found -> found.<Response>map(
